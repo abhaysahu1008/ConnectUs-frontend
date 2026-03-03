@@ -1,8 +1,35 @@
-import React, { useState } from "react";
+import axios from "axios";
+import { useState } from "react";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailId, setEmailId] = useState("dhoni@gmail.com");
+  const [password, setPassword] = useState("Dhoni@123");
+
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    if (!emailId || !password) {
+      console.log("All fields are required");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:7777/login",
+        {
+          emailId,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log(res.data);
+    } catch (error) {
+      console.log(error.response?.data || error.message);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -12,42 +39,45 @@ const Login = () => {
             Welcome Back
           </h2>
 
-          {/* Email */}
-          <div className="form-control mt-4">
-            <label className="label">
-              <span className="label-text text-white">Email</span>
-            </label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-          </div>
+          <form onSubmit={handleLogin}>
+            {/* Email */}
+            <div className="form-control mt-4">
+              <label className="label">
+                <span className="label-text text-white">Email</span>
+              </label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                value={emailId}
+                onChange={(e) => setEmailId(e.target.value)}
+              />
+            </div>
 
-          {/* Password */}
-          <div className="form-control mt-4">
-            <label className="label">
-              <span className="label-text text-white">Password</span>
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
+            {/* Password */}
+            <div className="form-control mt-4">
+              <label className="label">
+                <span className="label-text text-white">Password</span>
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-          {/* Button */}
-          <div className="form-control mt-6">
-            <button className="btn bg-orange-600 hover:bg-orange-700 text-white border-none">
-              Login
-            </button>
-          </div>
+            {/* Button */}
+            <div className="form-control mt-6">
+              <button
+                type="submit"
+                className="btn bg-orange-600 hover:bg-orange-700 text-white border-none"
+              >
+                Login
+              </button>
+            </div>
+          </form>
 
           <p className="text-center text-sm text-gray-400 mt-4">
             Don’t have an account?{" "}
