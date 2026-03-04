@@ -15,7 +15,7 @@ const Feed = () => {
         withCredentials: true,
       });
       dispatch(addFeed(res.data));
-      console.log(res.data);
+      console.log("FEED:", res.data);
     } catch (error) {
       console.log(error);
     }
@@ -29,7 +29,11 @@ const Feed = () => {
 
   return (
     <div className="flex items-center justify-center bg-gray-950 min-h-[80vh]">
-      <UserCard user={userFeed[0]}/>
+      {userFeed?.length > 0 ? (
+        <UserCard user={userFeed[0]} />
+      ) : (
+        <p>No users found</p>
+      )}
     </div>
   );
 };
