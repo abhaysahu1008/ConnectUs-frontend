@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addRequest } from "../utils/requestSlice";
+import { addRequest, removeRequest } from "../utils/requestSlice";
 
 const Request = () => {
   const dispatch = useDispatch();
@@ -18,23 +18,24 @@ const Request = () => {
     console.log("Request data:", data);
   };
 
+  const reviewRequest = async (status, _id) => {
+    await axios.post(
+      BASE_URL + `/request/review/${status}/${_id}`,
+      {},
+      { withCredentials: true },
+    );
+    dispatch(removeRequest(_id));
+  };
+
   useEffect(() => {
     fetchRequests();
   }, []);
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center min-h-screen">
-  //       <span className="loading loading-spinner loading-lg text-primary"></span>
-  //     </div>
-  //   );
-  // }
-
   if (!AllRequests || AllRequests.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="alert alert-info shadow-lg w-fit">
-          <span>No connections found.</span>
+        <div className="">
+          <span>No request found.</span>
         </div>
       </div>
     );
@@ -58,16 +59,19 @@ const Request = () => {
           } = request.fromUserId;
 
           return (
-            <div key={_id} className="card bg-base-100 shadow-xl">
-              <figure className="px-6 pt-6">
+            <div
+              key={_id}
+              className="card lg:card-side bg-base-100 shadow-xl p-4 items-center"
+            >
+              <figure>
                 <img
                   src={photoUrl}
                   alt="user"
-                  className="rounded-xl h-32 w-32 object-cover"
+                  className="rounded-xl h-28 w-28 object-cover"
                 />
               </figure>
 
-              <div className="card-body items-center text-center">
+              <div className="card-body">
                 <h2 className="card-title">
                   {firstName} {lastName}
                 </h2>
@@ -76,10 +80,10 @@ const Request = () => {
                   {age} • {gender}
                 </p>
 
-                {about && <p className="text-sm mt-2">{about}</p>}
+                {about && <p className="text-sm">{about}</p>}
 
                 {skills && skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     {skills.map((skill, index) => (
                       <span
                         key={index}
@@ -90,9 +94,20 @@ const Request = () => {
                     ))}
                   </div>
                 )}
-                <div className="card-actions justify-center mt-3">
-                  <button className="btn bg-blue-700">Reject</button>
-                  <button className="btn bg-pink-800">Accept</button>
+
+                <div className="card-actions mt-3">
+                  <button
+                    className="btn bg-red-800 btn-sm"
+                    onClick={() => reviewRequest("rejected", request._id)}
+                  >
+                    Reject
+                  </button>
+                  <button
+                    className="btn bg-blue-800 btn-sm"
+                    onClick={() => reviewRequest("accepted", request._id)}
+                  >
+                    Accept
+                  </button>
                 </div>
               </div>
             </div>

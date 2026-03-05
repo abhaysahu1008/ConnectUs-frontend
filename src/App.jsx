@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Connections from "./pages/Connections";
 import Request from "./pages/Request";
 import Body from "./components/Body";
+import SignUp from "./pages/SignUp";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/" element={<Body />}>
             <Route index element={<Feed />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<SignUp/>} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/connections" element={<Connections />} />
             <Route path="/requests" element={<Request />} />

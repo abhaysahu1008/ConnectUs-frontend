@@ -63,8 +63,8 @@ const Connections = () => {
           } = connection;
 
           return (
-            <div key={_id} className="card bg-base-100 shadow-xl">
-              <figure className="px-6 pt-6">
+            <div key={_id} className="card lg:card-side bg-base-100 shadow-xl">
+              <figure className="p-6">
                 <img
                   src={photoUrl}
                   alt="user"
@@ -72,7 +72,7 @@ const Connections = () => {
                 />
               </figure>
 
-              <div className="card-body items-center text-center">
+              <div className="card-body">
                 <h2 className="card-title">
                   {firstName} {lastName}
                 </h2>
@@ -81,10 +81,10 @@ const Connections = () => {
                   {age} • {gender}
                 </p>
 
-                {about && <p className="text-sm mt-2">{about}</p>}
+                {about && <p className="text-sm">{about}</p>}
 
                 {skills && skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     {skills.map((skill, index) => (
                       <span
                         key={index}

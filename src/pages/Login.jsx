@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 
 const Login = () => {
@@ -91,7 +91,9 @@ const Login = () => {
 
           <p className="text-center text-sm text-gray-400 mt-4">
             Don’t have an account?{" "}
-            <span className="text-orange-500 cursor-pointer">Sign up</span>
+            <span className="text-orange-500 cursor-pointer">
+              <Link to={"/register"}>Sign up</Link>
+            </span>
           </p>
         </div>
       </div>
