@@ -1,11 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
-
+import Feed from "./pages/Feed";
+import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Connections from "./pages/Connections";
+import Request from "./pages/Request";
 import Body from "./components/Body";
-import Feed from "./components/Feed";
-import Profile from "./components/Profile";
-import Login from "./components/Login";
 
 export default function App() {
   return (
@@ -14,8 +15,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Body />}>
             <Route index element={<Feed />} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/connections" element={<Connections />} />
+            <Route path="/requests" element={<Request />} />
           </Route>
         </Routes>
       </BrowserRouter>

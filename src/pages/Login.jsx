@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 
 const Login = () => {
-  const [emailId, setEmailId] = useState("dhoni@gmail.com");
-  const [password, setPassword] = useState("Dhoni@123");
+  const [emailId, setEmailId] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!emailId || !password) {
-      console.log("All fields are required");
+      // console.log("All fields are required");
       return;
     }
 
@@ -49,11 +49,11 @@ const Login = () => {
           </h2>
 
           <form onSubmit={handleLogin}>
-            {/* Email */}
             <div className="form-control mt-4">
               <label className="label">
                 <span className="label-text text-white">Email</span>
               </label>
+
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -63,11 +63,11 @@ const Login = () => {
               />
             </div>
 
-            {/* Password */}
             <div className="form-control mt-4 mb-2">
               <label className="label">
                 <span className="label-text text-white">Password</span>
               </label>
+
               <input
                 type="password"
                 placeholder="Enter your password"
@@ -77,7 +77,8 @@ const Login = () => {
               />
             </div>
 
-            {error && <span className="  text-red-500">ERROR: {error}</span>}
+            {error && <span className="text-red-500">ERROR: {error}</span>}
+
             <div className="form-control mt-6">
               <button
                 type="submit"
