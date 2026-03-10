@@ -48,7 +48,7 @@ const SignUp = () => {
         },
       );
 
-      dispatch(addUser(res.data));
+      dispatch(addUser(res.data.user));
 
       setToast(true);
 
