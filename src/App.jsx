@@ -8,6 +8,7 @@ import Connections from "./pages/Connections";
 import Request from "./pages/Request";
 import Body from "./components/Body";
 import SignUp from "./pages/SignUp";
+import Premium from "./components/Premium";
 
 export default function App() {
   return (
@@ -17,10 +18,11 @@ export default function App() {
           <Route path="/" element={<Body />}>
             <Route index element={<Feed />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<SignUp/>} />
+            <Route path="/register" element={<SignUp />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/connections" element={<Connections />} />
             <Route path="/requests" element={<Request />} />
+            <Route path="/premium" element={<Premium />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -39,7 +39,7 @@ const Body = () => {
   return (
     <div>
       <Navbar />
-      <div className="pt-16 min-h-screen">
+      <div className=" min-h-screen">
         <Outlet />
       </div>
       <Footer />

@@ -8,31 +8,32 @@ import UserCard from "../components/UserCard";
 const Feed = () => {
   const dispatch = useDispatch();
   const userFeed = useSelector((store) => store.feed);
-  // console.log("FEED: ", userFeed);
 
   const fetchFeed = async () => {
     try {
       const res = await axios.get(BASE_URL + "/feed", {
         withCredentials: true,
       });
-
       dispatch(addFeed(res.data));
-      // console.log("FEED:", res.data);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    fetchFeed();
+    if (!userFeed || userFeed.length === 0) {
+      fetchFeed();
+    }
   }, []);
 
   return (
-    <div className="flex items-center justify-center bg-gray-950 min-h-[80vh]">
+    <div className="min-h-screen bg-gray-950 flex justify-center items-center">
       {userFeed?.length > 0 ? (
-        <UserCard user={userFeed[0]} />
+        <div className="w-[350px]">
+          <UserCard user={userFeed[0]} />
+        </div>
       ) : (
-        <p>No users found</p>
+        <p className="text-white">No users found</p>
       )}
     </div>
   );
