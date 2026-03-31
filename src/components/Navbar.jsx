@@ -46,7 +46,7 @@ const Navbar = () => {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full border">
-                <img alt="User Avatar" src={userData.photoUrl} />
+                <img alt="User Avatar" src={userData.photoUrl || null} />
               </div>
             </div>
 

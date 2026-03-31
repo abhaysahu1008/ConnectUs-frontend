@@ -9,6 +9,7 @@ import Request from "./pages/Request";
 import Body from "./components/Body";
 import SignUp from "./pages/SignUp";
 import Premium from "./components/Premium";
+import Chat from "./pages/Chat";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/connections" element={<Connections />} />
             <Route path="/requests" element={<Request />} />
             <Route path="/premium" element={<Premium />} />
+            <Route path="/chat/:targetUser" element={<Chat />} />
           </Route>
         </Routes>
       </BrowserRouter>
