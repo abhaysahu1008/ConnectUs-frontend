@@ -22,7 +22,7 @@ const Navbar = () => {
   console.log(userData);
 
   return (
-    <div className="navbar bg-base-300 shadow-md px-4">
+    <div className="navbar fixed bg-base-300 shadow-md px-4">
       {/* Logo */}
       <div className="flex-1">
         <Link to="/" className="text-xl font-bold">
