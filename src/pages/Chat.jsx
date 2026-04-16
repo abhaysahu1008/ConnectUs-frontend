@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { createSocketConnection } from "../utils/socket";
@@ -6,70 +6,77 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 
 const Chat = () => {
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
+
   const { targetUser } = useParams();
   const user = useSelector((store) => store.user);
   const userId = user?._id;
+
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  useEffect(() => {
-    if (!user?.firstName || !userId || !targetUser) {
-      return;
-    }
-    const newSocket = createSocketConnection();
+  const fetchMessages = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/chat/${targetUser}`, {
+        withCredentials: true,
+      });
 
-    setSocket(newSocket);
-    newSocket.emit("joinChat", {
-      firstName: user?.firstName,
+      const chatMessages = res.data.messages.map((msg) => ({
+        userId: msg?.senderId?._id,
+        firstName: msg?.senderId?.firstName,
+        text: msg?.text,
+      }));
+
+      setMessages(chatMessages);
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (targetUser) {
+      fetchMessages();
+    }
+  }, [targetUser]);
+
+  // ✅ Socket setup
+  useEffect(() => {
+    if (!userId || !targetUser) return;
+
+    const socket = createSocketConnection();
+    socketRef.current = socket;
+
+    socket.emit("joinChat", {
       userId,
       targetUser,
+      firstName: user?.firstName,
     });
 
-    newSocket.on("messageRecieved", ({ firstName, text }) => {
-      // console.log(firstName + " " + text);
-      setMessages((messages) => [...messages, { firstName, text }]);
+    socket.on("messageReceived", (data) => {
+      setMessages((prev) => [...prev, data]);
     });
 
     return () => {
-      newSocket.disconnect();
+      socket.off("messageReceived");
+      socket.disconnect();
     };
-  }, [user?.firstName, userId, targetUser]);
+  }, [userId, targetUser]);
 
+  // ✅ Send message
   const sendMessage = () => {
-    // const socket = createSocketConnection();
-    socket.emit("sendMessage", {
-      firstName: user?.firstName,
-      lastName: user?.lastName,
+    if (!newMessage.trim() || !socketRef.current) return;
+
+    const messageData = {
       userId,
       targetUser,
+      firstName: user?.firstName,
       text: newMessage,
-    });
+    };
+
+    socketRef.current.emit("sendMessage", messageData);
+
     setNewMessage("");
   };
-
-  //old chat
-  const fetchMessages = async () => {
-    const chats = await axios.get(BASE_URL + "/chat/" + targetUser, {
-      withCredentials: true,
-    });
-
-    const chatMessages = chats.data.messages.map((msg) => {
-      return {
-        firstName: msg?.senderId.firstName,
-        lastName: msg?.senderId.lastName,
-        text: msg?.text,
-      };
-    });
-
-    setMessages(chatMessages);
-
-    console.log("CHATS", chatMessages);
-  };
-
-  useEffect(() => {
-    fetchMessages();
-  }, []);
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -81,20 +88,22 @@ const Chat = () => {
 
         {/* Messages */}
         <div className="flex-1 p-4 overflow-y-auto space-y-3">
-          {/* Left message */}
           {messages.map((msg, index) => (
             <div
-              className={` chat ${msg.firstName === user.firstName ? "chat-end" : "chat-start"}`}
-              key={index}
+              key={`${msg.userId}-${index}`}
+              className={`chat ${
+                msg.userId === userId ? "chat-end" : "chat-start"
+              }`}
             >
               <div className="chat-image avatar">
                 <div className="w-10 rounded-full">
                   <img
-                    alt="Tailwind CSS chat bubble component"
+                    alt="avatar"
                     src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
                   />
                 </div>
               </div>
+
               <div className="chat-header">{msg.firstName}</div>
               <div className="chat-bubble">{msg.text}</div>
             </div>
@@ -110,9 +119,10 @@ const Chat = () => {
             placeholder="Type a message..."
             className="flex-1 px-3 py-2 rounded-lg bg-gray-700 text-white outline-none"
           />
+
           <button
-            className="bg-blue-500 px-4 py-2 rounded-lg text-white hover:bg-blue-600"
             onClick={sendMessage}
+            className="bg-blue-500 px-4 py-2 rounded-lg text-white hover:bg-blue-600"
           >
             Send
           </button>
