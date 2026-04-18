@@ -21,19 +21,34 @@ const Feed = () => {
   };
 
   useEffect(() => {
-    if (!userFeed || userFeed.length === 0) {
-      fetchFeed();
-    }
+    if (!userFeed || userFeed.length === 0) fetchFeed();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-950 flex justify-center items-center">
+    <div className="min-h-screen bg-black flex flex-col justify-center items-center pt-14 sm:pt-16 px-4 py-8">
+      <div
+        className="fixed inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(#00ffff 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
       {userFeed?.length > 0 ? (
-        <div className="w-[350px]">
+        <div className="flex flex-col items-center gap-4 w-full">
+          <p className="text-xs font-mono text-gray-600 uppercase tracking-widest">
+            {userFeed.length} developer{userFeed.length !== 1 ? "s" : ""} in
+            feed
+          </p>
           <UserCard user={userFeed[0]} />
         </div>
       ) : (
-        <p className="text-white">No users found</p>
+        <div className="text-center px-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-cyan-500/20 rotate-45 mx-auto mb-5 sm:mb-6" />
+          <p className="text-gray-600 font-mono text-xs sm:text-sm uppercase tracking-widest">
+            No more developers
+          </p>
+        </div>
       )}
     </div>
   );

@@ -15,85 +15,105 @@ const Login = () => {
 
   async function handleLogin(e) {
     e.preventDefault();
-
-    if (!emailId || !password) {
-      // console.log("All fields are required");
-      return;
-    }
-
+    if (!emailId || !password) return;
     try {
       const res = await axios.post(
         BASE_URL + "/login",
-        {
-          emailId,
-          password,
-        },
-        {
-          withCredentials: true,
-        },
+        { emailId, password },
+        { withCredentials: true },
       );
-
       dispatch(addUser(res.data));
-      return (window.location.href = "/");
+      window.location.href = "/";
     } catch (error) {
       setError(error.response?.data?.message || error.message);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="card w-96 bg-base-100 shadow-2xl border border-gray-700">
-        <div className="card-body">
-          <h2 className="text-3xl font-bold text-center mb-6 text-white">
-            Welcome Back
-          </h2>
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+      {/* Grid background */}
+      <div
+        className="fixed inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(#00ffff 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-          <form onSubmit={handleLogin}>
-            <div className="form-control mt-4">
-              <label className="label">
-                <span className="label-text text-white">Email</span>
+      <div className="relative w-full max-w-sm sm:max-w-md">
+        {/* Corner accents */}
+        <div className="absolute -top-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-cyan-400" />
+        <div className="absolute -top-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-cyan-400" />
+        <div className="absolute -bottom-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-cyan-400" />
+        <div className="absolute -bottom-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-cyan-400" />
+
+        <div className="bg-gray-950 border border-cyan-500/20 p-6 sm:p-10">
+          {/* Header */}
+          <div className="mb-7 sm:mb-8 text-center">
+            <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-cyan-400 rotate-45" />
+              <span
+                className="text-white font-black text-lg sm:text-xl tracking-tight"
+                style={{ fontFamily: "'Courier New', monospace" }}
+              >
+                DEV<span className="text-cyan-400">ZOO</span>
+              </span>
+            </div>
+            <p className="text-gray-600 text-xs font-mono uppercase tracking-widest">
+              Access Terminal
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+            <div>
+              <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">
+                Email ID
               </label>
-
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 value={emailId}
                 onChange={(e) => setEmailId(e.target.value)}
+                placeholder="user@domain.com"
+                className="w-full bg-black border border-gray-800 focus:border-cyan-500/60 text-white text-sm font-mono px-4 py-3 outline-none transition-colors duration-200 placeholder-gray-700"
               />
             </div>
 
-            <div className="form-control mt-4 mb-2">
-              <label className="label">
-                <span className="label-text text-white">Password</span>
+            <div>
+              <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">
+                Password
               </label>
-
               <input
                 type="password"
-                placeholder="Enter your password"
-                className="input input-bordered bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full bg-black border border-gray-800 focus:border-cyan-500/60 text-white text-sm font-mono px-4 py-3 outline-none transition-colors duration-200 placeholder-gray-700"
               />
             </div>
 
-            {error && <span className="text-red-500">ERROR: {error}</span>}
+            {error && (
+              <p className="text-red-500 text-xs font-mono border border-red-500/20 bg-red-500/5 px-3 py-2 break-words">
+                ✗ {error}
+              </p>
+            )}
 
-            <div className="form-control mt-6">
-              <button
-                type="submit"
-                className="btn bg-orange-600 hover:bg-orange-700 text-white border-none"
-              >
-                Login
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-cyan-400 hover:bg-cyan-300 active:bg-cyan-500 text-black font-black text-sm font-mono uppercase tracking-widest transition-colors duration-200 mt-2 touch-manipulation"
+            >
+              Login →
+            </button>
           </form>
 
-          <p className="text-center text-sm text-gray-400 mt-4">
-            Don’t have an account?{" "}
-            <span className="text-orange-500 cursor-pointer">
-              <Link to={"/register"}>Sign up</Link>
-            </span>
+          <p className="text-center text-xs font-mono text-gray-600 mt-5 sm:mt-6">
+            No account?{" "}
+            <Link
+              to="/register"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+            >
+              Register here
+            </Link>
           </p>
         </div>
       </div>
