@@ -9,6 +9,7 @@ const Login = () => {
   const [emailId, setEmailId] = useState("abhay@gmail.com");
   const [password, setPassword] = useState("Abhay@123");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Login = () => {
   async function handleLogin(e) {
     e.preventDefault();
     if (!emailId || !password) return;
+    setLoading(true);
     try {
       const res = await axios.post(
         BASE_URL + "/login",
@@ -26,93 +28,128 @@ const Login = () => {
       window.location.href = "/";
     } catch (error) {
       setError(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
-      {/* Grid background */}
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      </div>
+
+      {/* Grid pattern */}
       <div
-        className="fixed inset-0 opacity-[0.04] pointer-events-none"
+        className="absolute inset-0 opacity-[0.02]"
         style={{
-          backgroundImage:
-            "linear-gradient(#00ffff 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
         }}
       />
 
-      <div className="relative w-full max-w-sm sm:max-w-md">
-        {/* Corner accents */}
-        <div className="absolute -top-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-cyan-400" />
-        <div className="absolute -top-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-cyan-400" />
-        <div className="absolute -bottom-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-cyan-400" />
-        <div className="absolute -bottom-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-cyan-400" />
-
-        <div className="bg-gray-950 border border-cyan-500/20 p-6 sm:p-10">
+      <div className="relative w-full max-w-md">
+        <div className="bg-[#12121a]/80 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl shadow-black/40">
           {/* Header */}
-          <div className="mb-7 sm:mb-8 text-center">
-            <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-cyan-400 rotate-45" />
-              <span
-                className="text-white font-black text-lg sm:text-xl tracking-tight"
-                style={{ fontFamily: "'Courier New', monospace" }}
-              >
-                DEV<span className="text-cyan-400">ZOO</span>
-              </span>
-            </div>
-            <p className="text-gray-600 text-xs font-mono uppercase tracking-widest">
-              Access Terminal
+          <div className="mb-8 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rotate-45 rounded-lg mx-auto mb-4 shadow-lg shadow-cyan-500/20" />
+            <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
+            <p className="text-white/40 text-sm">
+              Sign in to your DevZoo account
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">
-                Email ID
+              <label className="block text-sm font-medium text-white/60 mb-2">
+                Email address
               </label>
               <input
                 type="email"
                 value={emailId}
                 onChange={(e) => setEmailId(e.target.value)}
-                placeholder="user@domain.com"
-                className="w-full bg-black border border-gray-800 focus:border-cyan-500/60 text-white text-sm font-mono px-4 py-3 outline-none transition-colors duration-200 placeholder-gray-700"
+                placeholder="name@company.com"
+                className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-cyan-500/50 focus:bg-white/[0.05] text-white text-sm rounded-xl px-4 py-3.5 outline-none transition-all duration-300 placeholder-white/20"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-white/60">
+                  Password
+                </label>
+                <a
+                  href="#"
+                  className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                >
+                  Forgot password?
+                </a>
+              </div>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-black border border-gray-800 focus:border-cyan-500/60 text-white text-sm font-mono px-4 py-3 outline-none transition-colors duration-200 placeholder-gray-700"
+                placeholder="Enter your password"
+                className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-cyan-500/50 focus:bg-white/[0.05] text-white text-sm rounded-xl px-4 py-3.5 outline-none transition-all duration-300 placeholder-white/20"
               />
             </div>
 
             {error && (
-              <p className="text-red-500 text-xs font-mono border border-red-500/20 bg-red-500/5 px-3 py-2 break-words">
-                ✗ {error}
-              </p>
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/5 border border-red-500/10 text-red-400 text-sm">
+                <svg
+                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                {error}
+              </div>
             )}
 
             <button
               type="submit"
-              className="w-full py-3 bg-cyan-400 hover:bg-cyan-300 active:bg-cyan-500 text-black font-black text-sm font-mono uppercase tracking-widest transition-colors duration-200 mt-2 touch-manipulation"
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-sm rounded-xl transition-all duration-300 shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Login →
+              {loading ? (
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              ) : (
+                <>Sign In</>
+              )}
             </button>
           </form>
 
-          <p className="text-center text-xs font-mono text-gray-600 mt-5 sm:mt-6">
-            No account?{" "}
+          <p className="text-center text-sm text-white/40 mt-6">
+            Don&apos;t have an account?{" "}
             <Link
               to="/register"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
             >
-              Register here
+              Create one
             </Link>
           </p>
         </div>

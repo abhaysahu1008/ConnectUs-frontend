@@ -6,45 +6,51 @@ import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 
 const inputClass =
-  "w-full bg-black border border-gray-800 focus:border-cyan-500/60 text-white text-sm font-mono px-4 py-3 outline-none transition-colors duration-200 placeholder-gray-700";
-const labelClass =
-  "block text-xs font-mono text-gray-500 uppercase tracking-widest mb-2";
+  "w-full bg-white/[0.03] border border-white/[0.08] focus:border-cyan-500/50 focus:bg-white/[0.05] text-white text-sm rounded-xl px-4 py-3 outline-none transition-all duration-300 placeholder-white/20";
+const labelClass = "block text-sm font-medium text-white/60 mb-2";
 
 const SignUp = () => {
-  const [emailId, setEmailId] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState(null);
-  const [gender, setGender] = useState("");
-  const [skills, setSkills] = useState("");
-  const [about, setAbout] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
+  const [formData, setFormData] = useState({
+    emailId: "",
+    password: "",
+    firstName: "",
+    lastName: "",
+    age: "",
+    gender: "",
+    skills: "",
+    about: "",
+    photoUrl: "",
+  });
   const [error, setError] = useState("");
   const [toast, setToast] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setError("");
+  };
+
   async function saveUser(e) {
     e.preventDefault();
+    const { emailId, password, firstName, lastName } = formData;
     if (!emailId || !password || !firstName || !lastName) {
-      setError("Please fill required fields");
+      setError("Please fill all required fields");
       return;
     }
+    setLoading(true);
     try {
       const res = await axios.post(
         BASE_URL + "/signUp",
         {
-          firstName,
-          lastName,
-          age,
-          gender,
-          about,
-          emailId,
-          photoUrl,
-          password,
-          skills: skills.split(",").map((s) => s.trim()),
+          ...formData,
+          age: formData.age ? Number(formData.age) : undefined,
+          skills: formData.skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
         },
         { withCredentials: true },
       );
@@ -53,191 +59,237 @@ const SignUp = () => {
       setTimeout(() => navigate("/"), 1500);
     } catch (error) {
       setError(error.response?.data?.message || error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-black flex items-center justify-center px-4 py-16 sm:py-20">
-        <div
-          className="fixed inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage:
-              "linear-gradient(#00ffff 1px, transparent 1px), linear-gradient(90deg, #00ffff 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      </div>
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
 
-        <div className="relative w-full max-w-lg sm:max-w-2xl">
-          <div className="absolute -top-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-cyan-400" />
-          <div className="absolute -top-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-cyan-400" />
-          <div className="absolute -bottom-px -left-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-cyan-400" />
-          <div className="absolute -bottom-px -right-px w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-cyan-400" />
+      <div className="relative w-full max-w-2xl">
+        <div className="bg-[#12121a]/80 backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 shadow-2xl shadow-black/40">
+          <div className="mb-8 text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rotate-45 rounded-lg mx-auto mb-4 shadow-lg shadow-cyan-500/20" />
+            <h1 className="text-2xl font-bold text-white mb-1">
+              Create account
+            </h1>
+            <p className="text-white/40 text-sm">
+              Join the developer community
+            </p>
+          </div>
 
-          <div className="bg-gray-950 border border-cyan-500/20 p-6 sm:p-10">
-            <div className="mb-7 sm:mb-8 text-center">
-              <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-cyan-400 rotate-45" />
-                <span
-                  className="text-white font-black text-lg sm:text-xl tracking-tight"
-                  style={{ fontFamily: "'Courier New', monospace" }}
-                >
-                  DEV<span className="text-cyan-400">ZOO</span>
-                </span>
+          <form onSubmit={saveUser} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className={labelClass}>Email *</label>
+                <input
+                  type="email"
+                  placeholder="name@company.com"
+                  value={formData.emailId}
+                  onChange={(e) => handleChange("emailId", e.target.value)}
+                  className={inputClass}
+                />
               </div>
-              <p className="text-gray-600 text-xs font-mono uppercase tracking-widest">
-                Create Account
+              <div>
+                <label className={labelClass}>Password *</label>
+                <input
+                  type="password"
+                  placeholder="Min 8 characters"
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className={labelClass}>First Name *</label>
+                <input
+                  type="text"
+                  placeholder="John"
+                  value={formData.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Last Name *</label>
+                <input
+                  type="text"
+                  placeholder="Doe"
+                  value={formData.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div>
+                <label className={labelClass}>Age</label>
+                <input
+                  type="number"
+                  placeholder="25"
+                  value={formData.age}
+                  onChange={(e) => handleChange("age", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Gender</label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => handleChange("gender", e.target.value)}
+                  className={inputClass + " appearance-none cursor-pointer"}
+                >
+                  <option value="" className="bg-[#12121a]">
+                    Select
+                  </option>
+                  <option value="Male" className="bg-[#12121a]">
+                    Male
+                  </option>
+                  <option value="Female" className="bg-[#12121a]">
+                    Female
+                  </option>
+                  <option value="Other" className="bg-[#12121a]">
+                    Other
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label className={labelClass}>Photo URL</label>
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={formData.photoUrl}
+                  onChange={(e) => handleChange("photoUrl", e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelClass}>Skills</label>
+              <input
+                type="text"
+                placeholder="React, Node.js, MongoDB, TypeScript..."
+                value={formData.skills}
+                onChange={(e) => handleChange("skills", e.target.value)}
+                className={inputClass}
+              />
+              <p className="text-xs text-white/30 mt-1.5 ml-1">
+                Separate with commas
               </p>
             </div>
 
-            <form onSubmit={saveUser} className="space-y-4 sm:space-y-5">
-              {/* Email & Password */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>Email *</label>
-                  <input
-                    type="email"
-                    placeholder="user@domain.com"
-                    value={emailId}
-                    onChange={(e) => setEmailId(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label className={labelClass}>Password *</label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
+            <div>
+              <label className={labelClass}>About</label>
+              <textarea
+                rows="3"
+                placeholder="Tell us about yourself, your experience, and what you're looking for..."
+                value={formData.about}
+                onChange={(e) => handleChange("about", e.target.value)}
+                className={inputClass + " resize-none"}
+              />
+            </div>
 
-              {/* Name */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>First Name *</label>
-                  <input
-                    type="text"
-                    placeholder="First"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className={inputClass}
+            {error && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-red-500/5 border border-red-500/10 text-red-400 text-sm">
+                <svg
+                  className="w-4 h-4 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
-                </div>
-                <div>
-                  <label className={labelClass}>Last Name *</label>
-                  <input
-                    type="text"
-                    placeholder="Last"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className={inputClass}
+                </svg>
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-sm rounded-xl transition-all duration-300 shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
                   />
-                </div>
-              </div>
-
-              {/* Photo + Age + Gender */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-1">
-                  <label className={labelClass}>Age</label>
-                  <input
-                    type="number"
-                    placeholder="25"
-                    value={age || ""}
-                    onChange={(e) => setAge(Number(e.target.value))}
-                    className={inputClass}
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
-                </div>
-                <div className="sm:col-span-1">
-                  <label className={labelClass}>Gender</label>
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    className={inputClass + " bg-black"}
-                  >
-                    <option value="">Select</option>
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                <div className="sm:col-span-1">
-                  <label className={labelClass}>Photo URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://..."
-                    value={photoUrl}
-                    onChange={(e) => setPhotoUrl(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <label className={labelClass}>Skills</label>
-                <input
-                  type="text"
-                  placeholder="React, Node.js, MongoDB"
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                  className={inputClass}
-                />
-                <p className="text-xs font-mono text-gray-700 mt-1">
-                  Comma-separated
-                </p>
-              </div>
-
-              {/* About */}
-              <div>
-                <label className={labelClass}>About</label>
-                <textarea
-                  rows="3"
-                  placeholder="Tell something about yourself..."
-                  value={about}
-                  onChange={(e) => setAbout(e.target.value)}
-                  className={inputClass + " resize-none"}
-                />
-              </div>
-
-              {error && (
-                <p className="text-red-500 text-xs font-mono border border-red-500/20 bg-red-500/5 px-3 py-2 break-words">
-                  ✗ {error}
-                </p>
+                </svg>
+              ) : (
+                <>Create Account</>
               )}
+            </button>
+          </form>
 
-              <button
-                type="submit"
-                className="w-full py-3 bg-cyan-400 hover:bg-cyan-300 active:bg-cyan-500 text-black font-black text-sm font-mono uppercase tracking-widest transition-colors duration-200 touch-manipulation"
-              >
-                Create Account →
-              </button>
-            </form>
-
-            <p className="text-center text-xs font-mono text-gray-600 mt-5 sm:mt-6">
-              Already registered?{" "}
-              <Link
-                to="/login"
-                className="text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                Login
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm text-white/40 mt-6">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+            >
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
 
       {toast && (
-        <div className="fixed top-4 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50">
-          <div className="bg-black border border-cyan-500/40 px-5 py-3 font-mono text-sm text-cyan-400 shadow-2xl shadow-cyan-500/20 text-center sm:text-left sm:whitespace-nowrap">
-            ✓ Account created successfully
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="bg-[#12121a] border border-cyan-500/30 rounded-xl px-6 py-3.5 flex items-center gap-3 shadow-2xl shadow-cyan-500/10">
+            <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-cyan-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-cyan-400">
+              Account created successfully
+            </span>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

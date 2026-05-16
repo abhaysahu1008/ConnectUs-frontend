@@ -1,47 +1,43 @@
 import React, { useEffect } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { BASE_URL } from "../utils/constants";
 
 const Body = () => {
-  // console.log("Body render");
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const userData = useSelector((store) => store.user);
+  const location = useLocation();
 
   const fetchUser = async () => {
     try {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
-
       dispatch(addUser(res.data));
     } catch (error) {
       if (error.response?.status === 401) {
-        console.log(error);
-
-        navigate("/login");
+        const publicPaths = ["/login", "/register"];
+        if (!publicPaths.includes(location.pathname)) {
+          navigate("/login");
+        }
       }
     }
   };
 
   useEffect(() => {
-    // console.log("Body useEffect called");
-
     fetchUser();
   }, []);
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       <Navbar />
-      <div className=" min-h-screen">
+      <main className="flex-1 relative">
         <Outlet />
-      </div>
+      </main>
       <Footer />
     </div>
   );
